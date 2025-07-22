@@ -2,22 +2,47 @@
 
 This repository contains code, logs, and analysis related to the scalability testing of a serverless, event-driven image segmentation pipeline using AWS Lambda and Amazon S3. The goal is to evaluate how the pipeline performs under increasing workloads — simulating up to 300 monitoring sites operating concurrently.
 
-##  Repository Structure
+## Repository Structure
+
 ```bash
-├── deployment/
-│   └── build_and_push.sh               # Builds and pushes 300 site-specific Docker images to AWS ECR
-|
-├── lambda_function_and_trigger_setup/
-│   ├── lambda_template.py              # Creates Lambda Template
-│   ├── bucket_creation.py              # Script to create S3 buckets and configure triggers
-|   ├── trigger_setup.py
-│   └── template.yaml                   # Optional SAM/CloudFormation template for deployment
+Scalability-test:
+├───Container Build and Deploy                  # Code and scripts for building container images for Lambda
+│   │   .gitignore                              # Ignore files like checkpoints and Python cache
+│   │   build_and_push_images.sh               # Bash script to build & push 300 Docker images to AWS ECR
+│   │   Dockerfile                              # Docker config for Lambda image packaging
+│   │   requirements.txt                        # Python dependencies for the container
+│   │   __init__.py                             # Marks folder as a package (for local imports)
+│   │
+│   ├───Model                                   
+│   │       model_checkpoint.pth               # Deep learning model weights used for segmentation
+│   │       random_forest_model.pkl            # Pickled regression model for estimating stage height
+│   │
+│   └───src                                     # Source code used in the containerized Lambda function
+│           config.py                          # Configuration values (paths, constants, etc.)
+│           config.py.bak                      # Backup of the original config.py
+│           database_utils.py                  # Utilities to write results to the PostgreSQL database
+│           ground_truth.jpg                   # Ground truth image for IoU verification
+│           helpers.py                         # Timestamp extractor, mask operations, etc.
+│           image_processor.py                 # Main logic for running segmentation and ROI analysis
+│           lambda_handler.py                  # AWS Lambda entry point
+│           model_loader.py                    # Loads model weights
+│           s3_utils.py                        # Upload/download helper for S3
+│           __init__.py                        # Allows import as module
 │
-├── scalability_analysis/
-│   ├── scalability_data.csv            # Raw performance logs
-│   ├── data_retrieval.ipynb            # Notebook to parse and clean CloudWatch logs
-│   └── data_plotting.ipynb             # Notebook to visualize trends and generate plot
+├───Lambda Function Creation and Trigger Setup  # Scripts to automate S3 bucket, Lambda, and trigger setup
+│       add_trigger.py                         # Adds notification triggers from S3 to Lambda
+│       asyncuploadtos3.py                     # Async uploader to simulate camera uploads to S3
+│       Bucket_Creation.py                     # Creates 300 site-specific S3 input buckets
+│       deploy_all_templates.sh                # Deploys all generated SAM templates using AWS SAM CLI
+│       Lambda_Template Creation.py            # Generates SAM templates for Lambda functions (split batches)
+│
+└───Scalability Analysis                        # Notebooks and logs for analyzing pipeline scalability
+        loggroupsretreival.ipynb               # Retrieves log metrics from CloudWatch (latency, errors, etc.)
+        logsdata.csv                           # Parsed and structured log output from Lambda invocations
+        scalabilityanalysis.ipynb              # Plots and metrics to assess scalability under load
+
 ```
+
 
 ## What This Tests
 
@@ -26,19 +51,15 @@ This repository contains code, logs, and analysis related to the scalability tes
 - Log-based performance metrics extraction using CloudWatch
 - Scalability trends, bottlenecks, and throughput analysis
 
----
-
 ## Analysis Highlights
 
-Located in `scalability_analysis/`:
+Located in `Scalability Analysis/`:
 
-- `scalability_data.csv`: Collected runtime and performance metrics for each site
-- `data_retrieval.ipynb`: Scripted extraction of logs from AWS
-- `data_plotting.ipynb`: Visualizations of execution time, memory use, concurrency scaling, etc.
+- `logsdata.csv`: Collected runtime and performance metrics for each site
+- `loggroupsretreival.ipynb`: Scripted extraction of logs from AWS
+- `scalabilityanalysis.ipynb`: Visualizations of execution time, memory use, concurrency scaling, etc.
 
----
-
-## 🔧 Prerequisites
+## Prerequisites
 
 - AWS CLI with credentials configured
 - Docker installed and running
@@ -50,10 +71,3 @@ Located in `scalability_analysis/`:
   - `pandas`
   - `seaborn`
   - `numpy`
-
-## 🧪 How to Run the Tests
-
-1. **Build and push Docker images to ECR**  
-   ```bash
-   cd deployment
-   ./build_and_push.sh
