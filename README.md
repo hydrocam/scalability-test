@@ -3,7 +3,7 @@
 This repository contains code, logs, and analysis related to the scalability testing of a serverless, event-driven image segmentation pipeline using AWS Lambda and Amazon S3. The goal is to evaluate how the pipeline performs under increasing workloads — simulating up to 300 monitoring sites operating concurrently.
 
 ##  Repository Structure
-
+```bash
 ├── deployment/
 │   └── build_and_push.sh               # Builds and pushes 300 site-specific Docker images to AWS ECR
 |
@@ -17,7 +17,7 @@ This repository contains code, logs, and analysis related to the scalability tes
 │   ├── scalability_data.csv            # Raw performance logs
 │   ├── data_retrieval.ipynb            # Notebook to parse and clean CloudWatch logs
 │   └── data_plotting.ipynb             # Notebook to visualize trends and generate plot
-
+```
 
 ## What This Tests
 
