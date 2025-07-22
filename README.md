@@ -71,3 +71,8 @@ Located in `Scalability Analysis/`:
   - `pandas`
   - `seaborn`
   - `numpy`
+ 
+## Funding and Acknowledgments
+
+This research was supported by the Cooperative Institute for Research to Operations in Hydrology (CIROH) with joint funding under award NA22NWS4320003 from the NOAA Cooperative Institute Program and the U.S. Geological Survey. The statements, findings, conclusions, and recommendations are those of the author(s) and do not necessarily reflect the opinions of NOAA or USGS. Utah State University is a founding member of CIROH and receives funding under subaward from the University of Alabama. Additional funding and support have been provided by the Utah Water Research laboratory at Utah State University.
+
